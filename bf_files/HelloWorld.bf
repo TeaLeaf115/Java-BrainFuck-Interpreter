@@ -11,7 +11,7 @@ printing the visible ASCII characters and a new line character (ASCII 10);
     <           || Move to cell 1
     ++++++++    || Increment cell 1 by 8
     >           || Move to cell 2
-    -           || Decrememnt cell 2 by 1
+    -           || Decrement cell 2 by 1
 ]           (End of Loop)
 <               || Move to cell 1
 .               || Prints 'H' (ASCII 72)

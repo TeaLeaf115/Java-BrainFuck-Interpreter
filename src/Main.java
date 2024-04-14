@@ -10,13 +10,27 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			String data = "";
-			File f = new File("bf_files/[YOUR FILE HERE].bf"); // PUT YOUR FILE HERE
+			
+			Scanner fNameInp = new Scanner(System.in);
+			
+			System.out.println("What file do you want to run?:");
+			File f = new File(fNameInp.nextLine());
+			while (!f.exists() || f.isDirectory() || !f.getName().substring(f.getName().indexOf('.')).equals(".bf")) {
+				System.out.println("That file either does not exist, is a directory or is not a BrainFuck file.\nPlease try again: ");
+				f = new File(fNameInp.nextLine());
+			}
+			for (int i = 0; i <= 1_000; i++) {
+				System.out.printf("\033[%dA",1); // Move up
+				System.out.print("\033[2K"); // Erase line content
+			}
+			
 			Scanner inp = new Scanner(f);
 			while (inp.hasNextLine())
 				data += inp.nextLine();
 			inp.close();
-			data = data.replaceAll("[^\\+\\-\\<\\>\\,\\.\\[\\]]", "");
+			data = data.replaceAll("[^+\\-<>,.\\[\\]]", "");
 			handleData(data.toCharArray());
+			fNameInp.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -26,51 +40,33 @@ public class Main {
 		Stack<Integer> loopStack = new Stack<>();
 		for (int j = 0; j < chArr.length; j++) {
 			switch (chArr[j]) {
-				case ('>'):
-					i++;
-					break;
-				case ('<'):
+				case ('>') -> i++;
+				case ('<') -> {
 					i--;
-					break;
-				case ('+'):
-					array[i]++;
-					break;
-				case ('-'):
-					array[i]--;
-					break;
-				case ('.'):
-					System.out.print(array[i]);
-					break;
-				case (','):
-					array[i] = (char) System.in.read();
-					break;
-				case ('['):
-					loopStack.push(j);
-					break;
-				case (']'):
+					if (i < 0)
+						i = array.length - 1;
+				}
+				case ('+') -> array[i]++;
+				case ('-') -> array[i]--;
+				case ('.') -> System.out.print(array[i]);
+				case (',') -> array[i] = (char) System.in.read();
+				case ('[') -> loopStack.push(j);
+				case (']') -> {
 					if (loopStack.isEmpty())
 						throw new BrainFuckNotOpenedLoopException();
-					int loopStart = loopStack.pop() + 1;;
+					int loopStart = loopStack.pop() + 1;
 					while (array[i] != 0)
 						handleData(Arrays.copyOfRange(chArr, loopStart, j));
-					break;
-				default:
-					break;
+				}
+				default -> {
+				}
 			}
 		}
 		if (!loopStack.isEmpty())
 			throw new BrainFuckNotClosedLoopException();
 	}
 	
-	protected static class BrainFuckNotOpenedLoopException extends Exception {
-		public BrainFuckNotOpenedLoopException() {
-			super();
-		}
-	}
+	protected static class BrainFuckNotOpenedLoopException extends Exception{}
 	
-	protected static class BrainFuckNotClosedLoopException extends Exception {
-		public BrainFuckNotClosedLoopException() {
-			super();
-		}
-	}
+	protected static class BrainFuckNotClosedLoopException extends Exception {}
 }
