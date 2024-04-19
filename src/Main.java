@@ -58,8 +58,7 @@ public class Main {
 					while (array[i] != 0)
 						handleData(Arrays.copyOfRange(chArr, loopStart, j));
 				}
-				default -> {
-				}
+				default -> {}
 			}
 		}
 		if (!loopStack.isEmpty())
